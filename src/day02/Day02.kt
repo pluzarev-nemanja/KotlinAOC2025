@@ -1,0 +1,46 @@
+package day02
+
+import kotlin.io.path.Path
+import kotlin.io.path.readText
+
+var debugMode = true
+
+fun println(string: String) {
+    if (debugMode) kotlin.io.println(string)
+}
+
+fun String.hasEvenDigits(): Boolean = this.removePrefix("-").length.rem(2) == 0
+
+fun main() {
+
+    fun readInput(fileName: String): String = Path("src/day02/$fileName.txt").readText().trim()
+
+    fun parse(input: String): List<Long> = input.split(",").flatMap {
+        val ends = it.split("-")
+        LongRange(start = ends.first().toLong(), endInclusive = ends.last().toLong())
+    }
+
+    fun findInvalidIds(fileName: String): List<Long> {
+        val inputRanges = parse(readInput(fileName))
+        println("Count: ${inputRanges.size}")
+        val invalidIds = mutableListOf<Long>()
+        for (i in inputRanges) {
+            val inputId = i.toString()
+            if (inputId.hasEvenDigits()) {
+                val half = inputId.length / 2
+                val firstPart = inputId.substring(0, half)
+                val secondPart = inputId.substring(half, inputId.length)
+                if (firstPart == secondPart) invalidIds.add(i)
+            }
+        }
+        println("InvalidIds: $invalidIds")
+        return invalidIds.toList()
+    }
+
+    fun sumAllInvalidIds(fileName: String): Long {
+        val invalidIds = findInvalidIds(fileName)
+        return invalidIds.sum()
+    }
+
+    println("Sum of all invalidIds: ${sumAllInvalidIds("input")}")
+}
