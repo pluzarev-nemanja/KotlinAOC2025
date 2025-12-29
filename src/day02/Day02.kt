@@ -20,7 +20,7 @@ fun main() {
         LongRange(start = ends.first().toLong(), endInclusive = ends.last().toLong())
     }
 
-    fun findInvalidIds(fileName: String): List<Long> {
+    fun partOne(fileName: String): List<Long> {
         val inputRanges = parse(readInput(fileName))
         println("Count: ${inputRanges.size}")
         val invalidIds = mutableListOf<Long>()
@@ -37,10 +37,28 @@ fun main() {
         return invalidIds.toList()
     }
 
-    fun sumAllInvalidIds(fileName: String): Long {
-        val invalidIds = findInvalidIds(fileName)
-        return invalidIds.sum()
+    fun partTwo(fileName: String): List<Long> {
+        val inputRanges = parse(readInput(fileName))
+        println("Count: ${inputRanges.size}")
+        val invalidIds = mutableListOf<Long>()
+        for (input in inputRanges) {
+            val inputId = input.toString()
+            val maxChunkSize = inputId.length / 2
+            for (chunk in 1 .. maxChunkSize) {
+                val idChunks = inputId.chunked(chunk)
+                val invalid = idChunks.all { it == idChunks.first() }
+                if (invalid) {
+                    invalidIds.add(input)
+                    break
+                }
+            }
+        }
+        println("InvalidIds: $invalidIds")
+        return invalidIds.toList()
     }
 
-    println("Sum of all invalidIds: ${sumAllInvalidIds("input")}")
+    fun sumAllInvalidIds(invalidIds: () -> List<Long>): Long = invalidIds().sum()
+
+    println("Sum of all invalidIds: ${sumAllInvalidIds { partOne("input") }}")
+    println("Sum of all invalidIds: ${sumAllInvalidIds { partTwo("input") }}")
 }
